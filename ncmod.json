@@ -1,0 +1,205 @@
+{
+  "id": "netcraft-modapi",
+  "version": "0.1.0",
+  "environment": "both",
+  "entry": "NetCraft.ModApi.ModApiEntry",
+  "icon": "icon.png",
+  "hooks": [
+    {
+      "target": "NetCraft.Game.Server.DedicatedServer",
+      "method": "Tick",
+      "type": "Mark",
+      "label": "server_tick",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.SignalProbe",
+      "replaceMethod": "OnSignal"
+    },
+    {
+      "target": "NetCraft.Game.Server.MinecraftServer",
+      "method": "Run",
+      "type": "Mark",
+      "label": "server_started",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.SignalProbe",
+      "replaceMethod": "OnSignal"
+    },
+    {
+      "target": "NetCraft.Game.Server.DedicatedServer",
+      "method": "Stop",
+      "type": "Mark",
+      "label": "server_stopping",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.SignalProbe",
+      "replaceMethod": "OnSignal"
+    },
+    {
+      "target": "NetCraft.Game.Server.MinecraftServer",
+      "method": "Run",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.ServerProbe",
+      "replaceMethod": "OnServerRun"
+    },
+    {
+      "target": "NetCraft.Game.Commands.EffectCommand",
+      "method": "Register",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.CommandProbe",
+      "replaceMethod": "OnCommandsReady"
+    },
+    {
+      "target": "NetCraft.Game.Client.MinecraftClient",
+      "method": "Tick",
+      "type": "Mark",
+      "label": "client_tick",
+      "environment": "client",
+      "replaceType": "NetCraft.ModApi.Internal.SignalProbe",
+      "replaceMethod": "OnSignal"
+    },
+    {
+      "target": "NetCraft.Game.Server.PlayerList",
+      "method": "PlaceNewPlayer",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.PlayerProbe",
+      "replaceMethod": "OnPlaceNewPlayer"
+    },
+    {
+      "target": "NetCraft.Game.Server.PlayerList",
+      "method": "RemovePlayer",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.PlayerProbe",
+      "replaceMethod": "OnRemovePlayer"
+    },
+    {
+      "target": "NetCraft.Game.Server.ServerPlayer",
+      "method": "Disconnect",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.PlayerProbe",
+      "replaceMethod": "OnDisconnect"
+    },
+    {
+      "target": "NetCraft.Game.Server.PlayerList",
+      "method": "HurtPlayer",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.PlayerProbe",
+      "replaceMethod": "OnHurtPlayer"
+    },
+    {
+      "target": "NetCraft.Game.Server.PlayerList",
+      "method": "RespawnPlayer",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.PlayerProbe",
+      "replaceMethod": "OnRespawnPlayer"
+    },
+    {
+      "target": "NetCraft.Game.Network.Protocol.Game.ServerGamePacketListenerImpl",
+      "method": "HandleChat",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.PlayerProbe",
+      "replaceMethod": "OnChat"
+    },
+    {
+      "target": "NetCraft.Storage.ServerChunkCache",
+      "method": "set_ChunkLoaded",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.LevelProbe",
+      "replaceMethod": "OnChunkLoadedAssigned"
+    },
+    {
+      "target": "NetCraft.Storage.ServerChunkCache",
+      "method": "set_ChunkUnloaded",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.LevelProbe",
+      "replaceMethod": "OnChunkUnloadedAssigned"
+    },
+    {
+      "target": "NetCraft.Storage.ServerChunkCache",
+      "method": "set_ChunkSaveSink",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.LevelProbe",
+      "replaceMethod": "OnChunkSaveAssigned"
+    },
+    {
+      "target": "NetCraft.Server.Gui.ServerWindow",
+      "method": "RefreshNow",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.GuiProbe",
+      "replaceMethod": "OnWindowRefresh"
+    },
+    {
+      "target": "NetCraft.Game.Commands.CommandManager",
+      "method": "Execute",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.CommandProbe",
+      "replaceMethod": "OnExecute"
+    },
+    {
+      "target": "NetCraft.Network.PacketProcessor",
+      "method": "ScheduleIfPossible",
+      "type": "CallSite",
+      "environment": "both",
+      "replaceType": "NetCraft.ModApi.Internal.NetworkProbe",
+      "replaceMethod": "OnScheduleIfPossible"
+    },
+    {
+      "target": "NetCraft.Network.PacketProcessor",
+      "method": "HandleNow",
+      "type": "CallSite",
+      "environment": "both",
+      "replaceType": "NetCraft.ModApi.Internal.NetworkProbe",
+      "replaceMethod": "OnHandleNow"
+    },
+    {
+      "target": "NetCraft.Storage.PersistentServerLevel",
+      "method": "Tick",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.LevelProbe",
+      "replaceMethod": "OnLevelTick"
+    },
+    {
+      "target": "NetCraft.Storage.SavedDataStorage",
+      "method": "ScheduleSave",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.StorageProbe",
+      "replaceMethod": "OnScheduleSave"
+    },
+    {
+      "target": "NetCraft.Storage.Updates.IBlockUpdateSink",
+      "method": "BlockChanged",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.BlockProbe",
+      "replaceMethod": "OnBlockChanged"
+    },
+    {
+      "target": "NetCraft.Game.Server.ServerBlockUpdates",
+      "method": "BreakBlock",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.BlockProbe",
+      "replaceMethod": "OnBreakBlock"
+    },
+    {
+      "target": "NetCraft.Game.Server.ServerBlockUpdates",
+      "method": "SpawnDrop",
+      "type": "CallSite",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.BlockProbe",
+      "replaceMethod": "OnSpawnDrop"
+    }
+  ]
+}

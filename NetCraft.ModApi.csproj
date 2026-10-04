@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    NetCraft.ModApi 模组 API 库。
+    它有两个身份：一是给其他模组用的 API 表面（事件订阅等），
+    二是它本身也是一个模组，带内嵌 ncmod.json，加载器把它当普通模组加载。
+    对应原版 Fabric 生态里 fabric-api 也是一个普通模组这件事。
+
+    本仓库只放 ModApi 自己 内核源码在 NetCraft 仓库。
+    编译期靠 libs/ 里那套引用程序集 内核接口变动时用 tools/sync-libs.ps1 重新捞一份。
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--内核改用引用程序集 跨仓库不能再用 ProjectReference 通配一次把整套 kernel dll 都挂上-->
+  <ItemGroup>
+    <Reference Include="libs\*.dll" />
+  </ItemGroup>
+
+  <!--
+    模组页是服务端界面的扩展 由本模组自己注入进去 对应 Fabric 那边的模组自带 GUI。
+    只引 Avalonia 核心不引 Desktop 壳 界面类型要等被实例化时才会去解析这个程序集，
+    客户端宿主没装 Avalonia 也不受影响。
+  -->
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.3" />
+  </ItemGroup>
+
+  <!--界面用的图片要走 avares:// 取 Avalonia 默认只收 axaml 图片得自己声明-->
+  <ItemGroup>
+    <AvaloniaResource Include="Gui\Assets\**" />
+  </ItemGroup>
+
+  <!--ncmod.json 作为内嵌资源，加载器用 MetadataReader 静态读它来判定这是不是一个模组-->
+  <ItemGroup>
+    <EmbeddedResource Include="ncmod.json" LogicalName="ncmod.json" />
+  </ItemGroup>
+
+  <!--模组图标 清单里的 icon 指的就是这个资源名-->
+  <ItemGroup>
+    <EmbeddedResource Include="icon.png" LogicalName="icon.png" />
+  </ItemGroup>
+
+  <!--测试要直接验账本与用法生成，这两块是内部实现不入公开面-->
+  <ItemGroup>
+    <InternalsVisibleTo Include="NetCraft.Test" />
+  </ItemGroup>
+
+  <!--
+    模组产物要落到宿主项目输出目录的 mods/ 下 加载器只扫那一层。
+    宿主项目不在这个仓库里 所以默认不部署 需要时传 -p:ModHostDirs=目录1;目录2。
+    漏掉这一步的表现是"规则一条都没生效"而且没有任何报错。
+  -->
+  <Target Name="DeployModToHosts" AfterTargets="Build" Condition="'$(ModHostDirs)' != ''">
+    <ItemGroup>
+      <ModHostDir Include="$(ModHostDirs)" />
+    </ItemGroup>
+    <MakeDir Directories="@(ModHostDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(ModHostDir.Identity)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

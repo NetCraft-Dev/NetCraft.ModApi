@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NetCraft.ModApi.Gui.ServerModsPage">
+
+  <Grid ColumnDefinitions="248,12,*">
+    <!--左边列出扫描到的模组 条目由代码构建 行内含小图标与状态-->
+    <Border Grid.Column="0" Classes="card">
+      <Grid RowDefinitions="Auto,6,Auto,10,*">
+        <TextBlock Grid.Row="0" Classes="cardTitle" Text="模组" />
+        <TextBlock Grid.Row="2" x:Name="SummaryLabel" Classes="hintText" TextWrapping="Wrap" />
+        <ListBox Grid.Row="4" x:Name="ModList" Background="Transparent" BorderThickness="0" />
+      </Grid>
+    </Border>
+
+    <!--右边是选中模组的详情 顶部一行固定放图标与身份信息 下面按小节滚动-->
+    <Border Grid.Column="2" Classes="card">
+      <Grid RowDefinitions="Auto,12,*">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,14,*">
+          <Image x:Name="DetailIcon" Width="64" Height="64" VerticalAlignment="Top" />
+          <StackPanel Grid.Column="2" Spacing="3">
+            <TextBlock x:Name="DetailName" FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimary}" TextWrapping="Wrap" />
+            <TextBlock x:Name="DetailSubtitle" Classes="hintText" TextWrapping="Wrap" />
+            <TextBlock x:Name="DetailPath" Classes="monoValue" TextWrapping="Wrap" />
+          </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+          <StackPanel x:Name="DetailBody" Spacing="14" />
+        </ScrollViewer>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>
