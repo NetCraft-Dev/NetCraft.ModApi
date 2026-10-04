@@ -172,7 +172,7 @@ public sealed class ChunkSavedArgs
 public sealed class LevelTickArgs
 {
     //Level 本拍推进的维度
-    public required PersistentServerLevel Level { get; init; }
+    public required NcLevel Level { get; init; }
 
     //RunsNormally 本拍是否正常推进 执行过 /tick freeze 时为 false
     //冻结下关卡照样 tick 只是实体与随机刻被过滤 所以本事件在冻结期间仍会触发

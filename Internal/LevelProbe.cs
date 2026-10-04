@@ -64,7 +64,7 @@ public static class LevelProbe
         level.Tick(runsNormally);
         ServerEvents.LevelTick.Publish(new LevelTickArgs
         {
-            Level = level,
+            Level = NcLevel.Get(level),
             RunsNormally = runsNormally,
         });
     }

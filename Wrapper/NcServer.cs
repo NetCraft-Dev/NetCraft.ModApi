@@ -68,16 +68,23 @@ public static class NcServer
     public static BlockEntityManager BlockEntities => Require().BlockEntities;
 
     //Overworld 主世界
-    public static PersistentServerLevel Overworld => Require().Overworld;
+    public static NcLevel Overworld => NcLevel.Get(Require().Overworld);
 
     //Nether 下界 未装载时为 null
-    public static PersistentServerLevel? Nether => Require().GetLevel(LevelKeys.NETHER);
+    public static NcLevel? Nether => Wrap(Require().GetLevel(LevelKeys.NETHER));
 
     //End 末地 未装载时为 null
-    public static PersistentServerLevel? End => Require().GetLevel(LevelKeys.END);
+    public static NcLevel? End => Wrap(Require().GetLevel(LevelKeys.END));
 
-    //GetLevel 按维度键取关卡 不存在返回 null
-    public static PersistentServerLevel? GetLevel(ResourceKey<Level> key) => Require().GetLevel(key);
+    //GetLevel 按维度键取内核关卡 包装层内部取用
+    internal static PersistentServerLevel? GetLevel(ResourceKey<Level> key) => Require().GetLevel(key);
+
+    //FindLevel 按维度标识找关卡 模组走 NcWorld.Get
+    internal static NcLevel? FindLevel(string dimension)
+        => Wrap(GetLevel(ResourceKey<Level>.Create(Registries.DIMENSION, Identifier.Parse(dimension))));
+
+    //Wrap 内核关卡包成句柄 null 原样透传
+    private static NcLevel? Wrap(PersistentServerLevel? level) => level is null ? null : NcLevel.Get(level);
 
     //Running 服务端是否在主循环中
     public static bool Running => Require().Running;
