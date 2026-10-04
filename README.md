@@ -42,4 +42,4 @@ dotnet build -c Release -p:ModHostDirs="<host>/mods"
 
 ## License
 
-GPL-3.0 — see [LICENSE](./LICENSE).
+Apache-2.0 — see [LICENSE](./LICENSE).
