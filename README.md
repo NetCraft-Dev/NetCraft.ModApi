@@ -13,27 +13,7 @@ The mod API surface for [NetCraft](https://github.com/NetCraft-Dev/NetCraft) —
 | `Internal/` | Probe types the loader injects; not part of the public surface |
 | `Gui/` | Mods page injected into the server GUI (Avalonia) |
 | `libs/` | Kernel reference assemblies this repo compiles against |
-| `tools/` | Maintenance scripts |
 
-## Building
-
-The kernel source lives in the NetCraft repository, not here. This repo compiles against the reference assemblies in `libs/`, so it builds on its own:
-
-```powershell
-dotnet build -c Release
-```
-
-When the kernel API changes, refresh `libs/` from a kernel build output:
-
-```powershell
-./tools/sync-libs.ps1 -KernelOutput <path to NetCraft.ServerExe bin/Release/net10.0>
-```
-
-The output DLL is a mod. To deploy it into a host, point `ModHostDirs` at the host's `mods/` directory:
-
-```powershell
-dotnet build -c Release -p:ModHostDirs="<host>/mods"
-```
 
 ## Documentation
 
