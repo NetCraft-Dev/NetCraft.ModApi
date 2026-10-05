@@ -26,7 +26,7 @@ dotnet build -c Release
 When the kernel API changes, refresh `libs/` from a kernel build output:
 
 ```powershell
-./tools/sync-libs.ps1 -KernelOutput <path to NetCraft.Server.Exe bin/Release/net10.0>
+./tools/sync-libs.ps1 -KernelOutput <path to NetCraft.ServerExe bin/Release/net10.0>
 ```
 
 The output DLL is a mod. To deploy it into a host, point `ModHostDirs` at the host's `mods/` directory:

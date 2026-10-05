@@ -12,10 +12,14 @@ namespace NetCraft.ModApi.Gui;
 //ServerModsPage 模组页
 //左边列出扫描到的模组 右边是选中那个的展示信息与注入规则
 //数据来自 ModHost 引导结束时登记的快照 模组集合之后不再变 页面只读
+//文案走内核那套 Loc 与 netcraft.gui.mods.* 键 跟随 nc-language 切换
 public sealed partial class ServerModsPage : UserControl
 {
     //缺省图标 模组没带图标时用它 由构建期的 pwsh 脚本画出来
     private const string DefaultIconUri = "avares://NetCraft.ModApi/Gui/Assets/ModDefaultIcon.png";
+
+    //Title 面板标题 axaml 只能绑静态属性
+    public static string Title => Loc.Get("netcraft.gui.mods.title");
 
     //_mods 列表当前展示的模组 下标与 ModList 的项一一对应
     private readonly List<ModInfo> _mods = new();
@@ -50,8 +54,8 @@ public sealed partial class ServerModsPage : UserControl
 
         var folder = ModHost.ModsFolder;
         SummaryLabel.Text = _mods.Count == 0
-            ? $"没有模组\n{folder}"
-            : $"{_mods.Count} 个模组\n{folder}";
+            ? Loc.Format("netcraft.gui.mods.summary_empty", folder)
+            : Loc.Format("netcraft.gui.mods.summary_count", _mods.Count, folder);
 
         if (_mods.Count > 0)
             ModList.SelectedIndex = 0;
@@ -102,7 +106,7 @@ public sealed partial class ServerModsPage : UserControl
         if (mod is null)
         {
             DetailIcon.Source = _defaultIcon;
-            DetailName.Text = "没有模组";
+            DetailName.Text = Loc.Get("netcraft.gui.mods.empty");
             DetailSubtitle.Text = string.Empty;
             DetailPath.Text = string.Empty;
             return;
@@ -113,19 +117,20 @@ public sealed partial class ServerModsPage : UserControl
         DetailSubtitle.Text = Subtitle(mod);
         DetailPath.Text = mod.AssemblyPath;
 
-        AddSection("描述", Text(mod.Description.Length > 0 ? mod.Description : "这个模组没有写描述"));
+        AddSection(Loc.Get("netcraft.gui.mods.section.description"),
+            Text(mod.Description.Length > 0 ? mod.Description : Loc.Get("netcraft.gui.mods.no_description")));
 
-        AddSection("信息", BuildInfo(mod));
+        AddSection(Loc.Get("netcraft.gui.mods.section.info"), BuildInfo(mod));
 
         if (HasContact(mod.Contact))
-            AddSection("链接", BuildLinks(mod.Contact));
+            AddSection(Loc.Get("netcraft.gui.mods.section.links"), BuildLinks(mod.Contact));
 
         if (mod.Authors.Count > 0 || mod.Contributors.Count > 0 || mod.License.Length > 0)
-            AddSection("署名", BuildCredits(mod));
+            AddSection(Loc.Get("netcraft.gui.mods.section.credits"), BuildCredits(mod));
 
-        AddSection("依赖", BuildDependencies(mod));
+        AddSection(Loc.Get("netcraft.gui.mods.section.dependencies"), BuildDependencies(mod));
 
-        AddSection($"注入规则 {mod.Hooks.Count} 条", BuildHooks(mod));
+        AddSection(Loc.Format("netcraft.gui.mods.section.hooks", mod.Hooks.Count), BuildHooks(mod));
     }
 
     //BuildInfo 标识 版本 运行端 状态 耗时
@@ -133,11 +138,12 @@ public sealed partial class ServerModsPage : UserControl
     {
         var rows = new List<(string Key, string Value)>
         {
-            ("标识", mod.Id),
-            ("版本", mod.Version.Length > 0 ? mod.Version : "未标注"),
-            ("运行端", EnvironmentText(mod.Environment)),
-            ("状态", StatusText(mod.Status)),
-            ("初始化", FormatLoadTime(mod.LoadMilliseconds)),
+            (Loc.Get("netcraft.gui.mods.field.id"), mod.Id),
+            (Loc.Get("netcraft.gui.mods.field.version"),
+                mod.Version.Length > 0 ? mod.Version : Loc.Get("netcraft.gui.mods.version_unknown")),
+            (Loc.Get("netcraft.gui.mods.field.environment"), EnvironmentText(mod.Environment)),
+            (Loc.Get("netcraft.gui.mods.field.status"), StatusText(mod.Status)),
+            (Loc.Get("netcraft.gui.mods.field.load_time"), FormatLoadTime(mod.LoadMilliseconds)),
         };
         return KeyValuePanel(rows);
     }
@@ -146,7 +152,7 @@ public sealed partial class ServerModsPage : UserControl
     //未走到初始化写明文 负值表示这一栏不适用 返回空串让整行都不显示
     private static string FormatLoadTime(double? milliseconds) => milliseconds switch
     {
-        null => "未走到初始化",
+        null => Loc.Get("netcraft.gui.mods.load_time_pending"),
         < 0 => string.Empty,
         var ms => $"{ms:F1} ms",
     };
@@ -155,9 +161,9 @@ public sealed partial class ServerModsPage : UserControl
     private static Control BuildCredits(ModInfo mod)
     {
         var rows = new List<(string Key, string Value)>();
-        if (mod.Authors.Count > 0) rows.Add(("作者", string.Join("、", mod.Authors)));
-        if (mod.Contributors.Count > 0) rows.Add(("贡献者", string.Join("、", mod.Contributors)));
-        if (mod.License.Length > 0) rows.Add(("许可证", mod.License));
+        if (mod.Authors.Count > 0) rows.Add((Loc.Get("netcraft.gui.mods.credit.authors"), Join(mod.Authors)));
+        if (mod.Contributors.Count > 0) rows.Add((Loc.Get("netcraft.gui.mods.credit.contributors"), Join(mod.Contributors)));
+        if (mod.License.Length > 0) rows.Add((Loc.Get("netcraft.gui.mods.credit.license"), mod.License));
         return KeyValuePanel(rows);
     }
 
@@ -165,9 +171,9 @@ public sealed partial class ServerModsPage : UserControl
     private Control BuildLinks(ModContact contact)
     {
         var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        AddLink("主页", contact.Homepage);
-        AddLink("源码", contact.Sources);
-        AddLink("问题", contact.Issues);
+        AddLink(Loc.Get("netcraft.gui.mods.link.homepage"), contact.Homepage);
+        AddLink(Loc.Get("netcraft.gui.mods.link.sources"), contact.Sources);
+        AddLink(Loc.Get("netcraft.gui.mods.link.issues"), contact.Issues);
         return panel;
 
         void AddLink(string label, string url)
@@ -190,12 +196,13 @@ public sealed partial class ServerModsPage : UserControl
         var dependents = manager?.GetModsDependingOn(mod.Name) ?? Array.Empty<string>();
 
         var panel = new StackPanel { Spacing = 6 };
-        panel.Children.Add(ChipRow("依赖", dependencies));
-        panel.Children.Add(ChipRow("被依赖", dependents));
+        panel.Children.Add(ChipRow(Loc.Get("netcraft.gui.mods.depends"), dependencies));
+        panel.Children.Add(ChipRow(Loc.Get("netcraft.gui.mods.dependents"), dependents));
         return panel;
     }
 
     //ChipRow 一行可跳转的模组名 空的时候写"无"
+    //标签列宽按英文最长的 Required by 留 中文下多出来的空白不影响对齐
     private Control ChipRow(string label, IReadOnlyList<string> names)
     {
         var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
@@ -203,7 +210,7 @@ public sealed partial class ServerModsPage : UserControl
         {
             Text = label,
             Classes = { "metricLabel" },
-            Width = 48,
+            Width = 80,
             VerticalAlignment = VerticalAlignment.Center,
         });
 
@@ -211,7 +218,7 @@ public sealed partial class ServerModsPage : UserControl
         {
             row.Children.Add(new TextBlock
             {
-                Text = "无",
+                Text = Loc.Get("netcraft.gui.mods.none"),
                 Classes = { "hintText" },
                 VerticalAlignment = VerticalAlignment.Center,
             });
@@ -238,7 +245,7 @@ public sealed partial class ServerModsPage : UserControl
     private static Control BuildHooks(ModInfo mod)
     {
         if (mod.Hooks.Count == 0)
-            return Text("没有注入规则");
+            return Text(Loc.Get("netcraft.gui.mods.no_hooks"));
 
         var panel = new StackPanel { Spacing = 3 };
         foreach (var hook in mod.Hooks)
@@ -277,7 +284,7 @@ public sealed partial class ServerModsPage : UserControl
             if (value.Length == 0)
                 continue;
 
-            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("72,*") };
+            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("80,*") };
             var text = new TextBlock
             {
                 Text = value,
@@ -371,26 +378,30 @@ public sealed partial class ServerModsPage : UserControl
     //Subtitle 列表与详情头共用的那行小字
     private static string Subtitle(ModInfo mod)
     {
-        var version = mod.Version.Length > 0 ? mod.Version : "未标注版本";
+        var version = mod.Version.Length > 0 ? mod.Version : Loc.Get("netcraft.gui.mods.version_unknown_subtitle");
         return $"{version} · {EnvironmentText(mod.Environment)} · {StatusText(mod.Status)}";
     }
 
+    //Join 多个署名拼一行 分隔符跟着语言走
+    private static string Join(IReadOnlyList<string> values)
+        => string.Join(Loc.Get("netcraft.gui.mods.list_separator"), values);
+
     private static string EnvironmentText(ModEnvironment environment) => environment switch
     {
-        ModEnvironment.Client => "客户端",
-        ModEnvironment.Server => "服务端",
-        _ => "双端",
+        ModEnvironment.Client => Loc.Get("netcraft.gui.mods.env.client"),
+        ModEnvironment.Server => Loc.Get("netcraft.gui.mods.env.server"),
+        _ => Loc.Get("netcraft.gui.mods.env.both"),
     };
 
     private static string StatusText(ModStatus status) => status switch
     {
-        ModStatus.Running => "已加载",
-        ModStatus.Initializing => "初始化中",
-        ModStatus.Scanned => "待初始化",
-        ModStatus.Error => "加载失败",
-        ModStatus.Skipped => "已跳过",
-        ModStatus.Interrupted => "已拦截",
-        _ => "未收录",
+        ModStatus.Running => Loc.Get("netcraft.gui.mods.status.running"),
+        ModStatus.Initializing => Loc.Get("netcraft.gui.mods.status.initializing"),
+        ModStatus.Scanned => Loc.Get("netcraft.gui.mods.status.scanned"),
+        ModStatus.Error => Loc.Get("netcraft.gui.mods.status.error"),
+        ModStatus.Skipped => Loc.Get("netcraft.gui.mods.status.skipped"),
+        ModStatus.Interrupted => Loc.Get("netcraft.gui.mods.status.interrupted"),
+        _ => Loc.Get("netcraft.gui.mods.status.unknown"),
     };
 
     //StatusBrush 状态用颜色区分 与日志页的级别色同系

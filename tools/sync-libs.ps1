@@ -1,6 +1,6 @@
 # 从一次内核构建的输出重新捞引用程序集
 # 内核接口变动之后跑一次 让 libs/ 跟上 NetCraft 仓库
-# 用法: ./tools/sync-libs.ps1 -KernelOutput <NetCraft.Server.Exe 的 bin/Release/net10.0>
+# 用法: ./tools/sync-libs.ps1 -KernelOutput <NetCraft.ServerExe 的 bin/Release/net10.0>
 param(
     [Parameter(Mandatory = $true)]
     [string]$KernelOutput
