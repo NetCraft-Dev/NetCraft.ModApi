@@ -32,6 +32,20 @@ public sealed class InjectAttribute : Attribute
     //Label 探针标签 仅 Probe 与 Mark 用
     public string? Label { get; set; }
 
+    //Ordinal 同一锚点在宿主方法里匹配到多处时只认第几处 0 基
+    //不写表示每一处都改 宿主里没有这么多处时这条规则不落地
+    public int? Ordinal { get; set; }
+
+    //ArgumentIndex 改第几个实参 0 基 实例调用的 this 算第 0 个 仅 HookType 为 CallArg 时用
+    public int? ArgumentIndex { get; set; }
+
+    //SliceFrom/SliceTo 方法内区间限定 写成"类型全名::方法名"
+    //把匹配收窄到宿主方法里第一次调用 SliceFrom 到第一次调用 SliceTo 之间 任一端都可留空
+    //两端都不写就是原来的"整个方法体内匹配"
+    public string? SliceFrom { get; set; }
+
+    public string? SliceTo { get; set; }
+
     //Environment 该规则适用的运行端 取 both/client/server 默认 both
     public string Environment { get; set; } = "both";
 }
