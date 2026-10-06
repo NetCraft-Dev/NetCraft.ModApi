@@ -1,5 +1,6 @@
 [Bb]in/
 [Oo]bj/
+Build/
 obj_v/
 .vs/
 .idea/
@@ -8,3 +9,4 @@ obj_v/
 *.swp
 *.bak
 tools/
+run/
