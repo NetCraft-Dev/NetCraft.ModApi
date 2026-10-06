@@ -9,4 +9,7 @@ obj_v/
 *.swp
 *.bak
 tools/
+.pslocal
+run/.pslocal/
+.psctx.json
 run/

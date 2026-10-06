@@ -1,4 +1,5 @@
 ﻿<ncproj version="1">
+ <!--Please use ncm build to complete the build-->
   <Build Nullable="true" ImplicitUsings="true" />
   <Sources Url="https://githubproxy.cc/https://raw.githubusercontent.com/NetCraft-Dev/NetCraft.Release/refs/heads/main/server/" />
   <Template Url="https://githubproxy.cc/https://raw.githubusercontent.com/NetCraft-Dev/NetCraftTemplate/refs/heads/main/NetCraftTemplate.yaml" Base="https://githubproxy.cc/https://raw.githubusercontent.com/XSY-HYH/NetCraftTemplate/refs/heads/main" />
