@@ -12,11 +12,22 @@ public static class ServerProbe
 {
     //OnServerRun 捕获服务端实例再放行原调用
     //捕获要排在 Run 之前 它方法体入口的 Mark 会立刻发 Started 事件 用户回调里就得能读到实例
+    //Run 返回即主循环退出 用 finally 补发 Stopped 无论正常关停还是崩溃退出都不漏
+    //Stopped 回调里只该做纯内存收尾 存档刷盘已在内核 Stop 里走完
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void OnServerRun(object self)
     {
         var server = (MinecraftServer)self;
         NcServer.Capture(server);
-        server.Run();
+        try
+        {
+            server.Run();
+        }
+        finally
+        {
+            //先发事件再失效实例 回调里还可能读 NcServer 上的统计
+            ServerEvents.Stopped.Publish(new ServerPhaseArgs { Phase = "stopped" });
+            NcServer.Release();
+        }
     }
 }

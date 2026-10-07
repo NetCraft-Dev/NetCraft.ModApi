@@ -26,8 +26,10 @@ public sealed class ModApiEntry
             tickHandle?.Dispose();
         });
 
+        ServerEvents.Starting.Subscribe(_ => Log.Debug("NetCraft-ModApi received server starting"));
         ServerEvents.Started.Subscribe(_ => Log.Debug("NetCraft-ModApi received server started"));
         ServerEvents.Stopping.Subscribe(_ => Log.Debug("NetCraft-ModApi received server stopping"));
+        ServerEvents.Stopped.Subscribe(_ => Log.Debug("NetCraft-ModApi received server stopped"));
 
         //新增四条挂点的自检 每条只留第一份就注销
         //挂点错位的表现是事件一直不来 而不是报错 留一行日志才能分辨这两种失败

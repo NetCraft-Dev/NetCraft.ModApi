@@ -20,6 +20,10 @@ public static class SignalProbe
     {
         switch (label)
         {
+            case "server_starting":
+                NcStartup.MarkReady();
+                ServerEvents.Starting.Publish(new ServerPhaseArgs { Phase = "starting" });
+                break;
             case "server_tick":
                 NcStartup.MarkReady();
                 ServerEvents.Tick.Publish(new ServerTickArgs

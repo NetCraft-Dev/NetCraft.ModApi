@@ -7,6 +7,15 @@
   "hooks": [
     {
       "target": "NetCraft.Game.Server.DedicatedServer",
+      "method": "InitServer",
+      "type": "Mark",
+      "label": "server_starting",
+      "environment": "server",
+      "replaceType": "NetCraft.ModApi.Internal.SignalProbe",
+      "replaceMethod": "OnSignal"
+    },
+    {
+      "target": "NetCraft.Game.Server.DedicatedServer",
       "method": "Tick",
       "type": "Mark",
       "label": "server_tick",

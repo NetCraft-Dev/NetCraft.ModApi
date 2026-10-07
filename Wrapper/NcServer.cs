@@ -31,41 +31,44 @@ public static class NcServer
     //Capture 由探针在内核启动主循环时调一次
     internal static void Capture(MinecraftServer server) => Volatile.Write(ref _current, server);
 
+    //Release 主循环退出后由探针调一次 实例随之失效
+    internal static void Release() => Volatile.Write(ref _current, null);
+
     //Players 在线玩家名单 包装层内部取用 模组走 NcPlayers
     internal static PlayerList Players => Require().PlayerList;
 
-    //Settings 服务端配置
-    public static ServerSettings Settings => Require().Settings;
+    //Settings 服务端配置 server.properties 的运行时只读视图
+    public static NcServerSettings Settings => NcServerSettings.Get(Require().Settings);
 
-    //Commands 命令管理器
-    public static CommandManager Commands => Require().Commands;
+    //Commands 命令管理器 内核易变类型 执行命令走 Execute
+    internal static CommandManager Commands => Require().Commands;
 
-    //TickRate 刻速率管理器 每秒刻数冻结世界与加速跑都从它走
-    public static ServerTickRateManager TickRate => Require().TickRate;
+    //TickRate 刻速率 每秒刻数冻结世界与加速跑都从它走
+    public static NcTickRate TickRate => NcTickRate.Get(Require().TickRate);
 
-    //EntityTracker 实体追踪 查某个实体对哪些玩家可见
-    public static EntityTracker EntityTracker => Require().EntityTracker;
+    //EntityTracker 实体追踪 内核易变类型 实体批次再定公开面
+    internal static EntityTracker EntityTracker => Require().EntityTracker;
 
-    //CommandStorage 命令方块与告示牌命令的持久存储
-    public static CommandStorage CommandStorage => Require().CommandStorage;
+    //CommandStorage 命令方块与告示牌命令的持久存储 内核易变类型 存储批次再定公开面
+    internal static CommandStorage CommandStorage => Require().CommandStorage;
 
-    //GameRules 游戏规则 查与改都走它
-    public static GameRuleMapData GameRules => Require().GameRules;
+    //GameRules 游戏规则 按名字读写
+    public static NcGameRules GameRules => NcGameRules.Get(Require().GameRules);
 
-    //PlayerData 玩家数据的读写入口
-    public static PlayerDataStorage PlayerData => Require().PlayerData;
+    //PlayerData 玩家数据读写入口 内核易变类型 存储批次再定公开面
+    internal static PlayerDataStorage PlayerData => Require().PlayerData;
 
-    //Stopwatches 计时器面板的数据源
-    public static Stopwatches Stopwatches => Require().Stopwatches;
+    //Stopwatches 计时器面板的数据源 内核诊断设施
+    internal static Stopwatches Stopwatches => Require().Stopwatches;
 
-    //DebugPlayers 调试假人管理
-    public static DebugPlayerManager DebugPlayers => Require().DebugPlayers;
+    //DebugPlayers 调试假人管理 内核调试设施
+    internal static DebugPlayerManager DebugPlayers => Require().DebugPlayers;
 
-    //Connections 当前全部连接 含未进入游戏的连接
-    public static IReadOnlyList<Connection> Connections => Require().Connections;
+    //Connections 当前全部连接 含未进入游戏的连接 内核易变类型 连接批次再定公开面
+    internal static IReadOnlyList<Connection> Connections => Require().Connections;
 
-    //BlockEntities 方块实体集合
-    public static BlockEntityManager BlockEntities => Require().BlockEntities;
+    //BlockEntities 方块实体集合 内核易变类型 方块实体批次再定公开面
+    internal static BlockEntityManager BlockEntities => Require().BlockEntities;
 
     //Overworld 主世界
     public static NcLevel Overworld => NcLevel.Get(Require().Overworld);
@@ -146,8 +149,8 @@ public static class NcServer
     //Broadcast 给全部在线玩家广播一条系统消息
     public static void Broadcast(string message) => Broadcast(Component.Literal(message));
 
-    //Broadcast 给全部在线玩家广播一条组件消息
-    public static void Broadcast(Component message) => Players.BroadcastSystemMessage(message, false);
+    //Broadcast 给全部在线玩家广播一条组件消息 内核易变类型 文本批次再定公开面
+    internal static void Broadcast(Component message) => Players.BroadcastSystemMessage(message, false);
 
     //Execute 以控制台身份执行一条命令 命令可不带前导斜杠 返回值即命令的返回值
     public static int Execute(string command)

@@ -3,7 +3,6 @@ using NetCraft.Game.World.Clock;
 using NetCraft.Primitives;
 using NetCraft.Registry;
 using NetCraft.Registry.State;
-using NetCraft.Storage;
 
 namespace NetCraft.ModApi.Wrapper;
 
@@ -38,8 +37,8 @@ public static class NcWorld
         set => Overworld.GameTime = value;
     }
 
-    //Clock 世界时钟管理器 时钟的暂停倍率与总刻数都从它走
-    public static ServerClockManager Clock => NcServer.Require().ClockManager;
+    //Clock 世界时钟管理器 内核多时钟键控实体 时钟批次再定公开面
+    internal static ServerClockManager Clock => NcServer.Require().ClockManager;
 
     //RainLevel 主世界雨量 取值 0 到 1
     public static float RainLevel
@@ -62,10 +61,10 @@ public static class NcWorld
     public static bool IsThundering => Overworld.IsThundering;
 
     //Border 主世界世界边界 大小中心与伤害都从它改
-    public static WorldBorder Border => Overworld.Inner.WorldBorder;
+    public static NcWorldBorder Border => NcWorldBorder.Get(Overworld.Inner.WorldBorder);
 
-    //Entities 主世界当前载入的实体
-    public static IEnumerable<Entity> Entities => Overworld.Inner.Entities;
+    //Entities 主世界当前载入的实体 内核易变类型 实体批次再定公开面
+    internal static IEnumerable<Entity> Entities => Overworld.Inner.Entities;
 
     //GetBlock 读主世界指定坐标的方块状态 区块未加载返回 null
     public static BlockState? GetBlock(int x, int y, int z) => GetBlock(Overworld, x, y, z);
@@ -87,12 +86,12 @@ public static class NcWorld
     public static bool BreakBlock(int x, int y, int z, NcPlayer? player = null)
         => ServerBlockUpdates.BreakBlock(Overworld.Inner, NcServer.Players, player?.Inner, new BlockPos(x, y, z));
 
-    //GetBlockEntity 取主世界的方块实体 位置没有或类型不符返回 null
-    public static T? GetBlockEntity<T>(int x, int y, int z) where T : class
+    //GetBlockEntity 取主世界的方块实体 内核易变类型 方块实体批次再定公开面
+    internal static T? GetBlockEntity<T>(int x, int y, int z) where T : class
         => Overworld.Inner.GetBlockEntity<T>(new BlockPos(x, y, z));
 
-    //PlaySound 在主世界的指定方块处播一个音效 以方块中心为坐标
-    public static void PlaySound(SoundEvent sound, SoundSource source, int x, int y, int z, float volume, float pitch)
+    //PlaySound 在主世界的指定方块处播一个音效 以方块中心为坐标 内核易变类型 声音批次再定公开面
+    internal static void PlaySound(SoundEvent sound, SoundSource source, int x, int y, int z, float volume, float pitch)
         => Overworld.Inner.PlaySound(sound, source, new BlockPos(x, y, z), volume, pitch);
 
     //LevelEvent 广播一个关卡事件 破坏粒子用 ServerBlockUpdates.ParticleBlockBreak

@@ -13,3 +13,4 @@ tools/
 run/.pslocal/
 .psctx.json
 run/
+smoke.ps1

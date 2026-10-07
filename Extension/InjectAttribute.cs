@@ -46,6 +46,24 @@ public sealed class InjectAttribute : Attribute
 
     public string? SliceTo { get; set; }
 
+    //InType/InMethod 宿主限定 只在这个方法体内匹配锚点 两个都可留空
+    //LocalRead/LocalWrite/Constant 不用它们 那三类的宿主就是构造参数里那个类型与方法
+    public string? InType { get; set; }
+
+    public string? InMethod { get; set; }
+
+    //Placement 锚点落位方式 取 Replace/Before/After 默认 Replace
+    //Before 与 After 保留原调用 在它之前或之后插一次回调 回调拿的是宿主方法的参数
+    //写成字符串不写枚举 扫描器按名字读元数据 解到枚举会把整条规则跳过
+    public string Placement { get; set; } = "Replace";
+
+    //LocalIndex 局部变量槽位 0 基 仅 HookType 为 LocalRead 或 LocalWrite 时用
+    public int? LocalIndex { get; set; }
+
+    //ConstantValue 要匹配的常量 仅 HookType 为 Constant 时用 按装箱后的类型比对
+    //5 与 5L 是两个不同的锚点 前者对 ldc.i4 后者对 ldc.i8
+    public object? ConstantValue { get; set; }
+
     //Environment 该规则适用的运行端 取 both/client/server 默认 both
     public string Environment { get; set; } = "both";
 }

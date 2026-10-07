@@ -7,7 +7,6 @@ using NetCraft.Game.World.Items;
 using NetCraft.ModApi.Internal;
 using NetCraft.Primitives;
 using NetCraft.Registry.State;
-using NetCraft.Storage;
 
 //ServerTickArgs 服务器 tick 事件参数
 public sealed class ServerTickArgs
@@ -26,7 +25,7 @@ public sealed class ClientTickArgs
 //ServerPhaseArgs 服务端生命周期节点参数
 public sealed class ServerPhaseArgs
 {
-    //Phase 节点名 started 或 stopping
+    //Phase 节点名 starting started stopping stopped
     public required string Phase { get; init; }
 }
 
@@ -183,8 +182,7 @@ public sealed class LevelTickArgs
 //数据是同步写完才发这个事件的 回调里读到的就是最终文件内容
 public sealed class SavedDataSavingArgs
 {
-    //Storage 落盘的那份存档数据表
-    public required SavedDataStorage Storage { get; init; }
+    //目前不携带内容 存储批次再补 存储表本体是内核易变类型不进公开面
 }
 
 //PacketReceivedArgs 收包事件参数
@@ -241,11 +239,18 @@ public static class ServerEvents
     //Tick 服务器主循环每 tick 触发一次 数据来自挂在 DedicatedServer.Tick 上的注入探针
     public static readonly NcEvent<ServerTickArgs> Tick = new();
 
+    //Starting 服务端开始启动 世界尚未加载 完成于 Started
+    public static readonly NcEvent<ServerPhaseArgs> Starting = new();
+
     //Started 服务端启动完成 端口已开始监听
     public static readonly NcEvent<ServerPhaseArgs> Started = new();
 
     //Stopping 服务端开始关闭 玩家连接会被断开
     public static readonly NcEvent<ServerPhaseArgs> Stopping = new();
+
+    //Stopped 主循环退出 存档刷盘已完成 之后进程不保证还在
+    //回调里只做纯内存收尾 别再碰世界与玩家
+    public static readonly NcEvent<ServerPhaseArgs> Stopped = new();
 
     //CommandRegister 内置命令注册完成 模组在这里往分派器里挂自己的命令
     public static readonly NcEvent<CommandRegisterArgs> CommandRegister = new();

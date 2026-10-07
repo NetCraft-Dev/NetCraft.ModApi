@@ -13,9 +13,8 @@ public static class StorageProbe
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static Task OnScheduleSave(object self)
     {
-        var storage = (SavedDataStorage)self;
-        var task = storage.ScheduleSave();
-        ServerEvents.SavedDataSaving.Publish(new SavedDataSavingArgs { Storage = storage });
+        var task = ((SavedDataStorage)self).ScheduleSave();
+        ServerEvents.SavedDataSaving.Publish(new SavedDataSavingArgs());
         return task;
     }
 }

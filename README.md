@@ -13,6 +13,22 @@ The mod API surface for [NetCraft](https://github.com/NetCraft-Dev/NetCraft) —
 | `Internal/` | Probe types the loader injects; not part of the public surface |
 | `Gui/` | Mods page injected into the server GUI (Avalonia) |
 
+## Wrapper purity policy
+
+Every kernel type that could show up on the public surface falls into one of three tiers:
+
+| Tier | Rule | Types |
+|---|---|---|
+| Whitelisted | May appear on the public surface under a **stable promise**: if the kernel changes them, ModApi ships a compat shim instead of breaking mods | brigadier (`NetCraft.Commands.*`), value types from `NetCraft.Primitives` (`BlockPos`, `Vec3`, `Identifier`, `GameType`, `BlockState`), `ItemStack`, `GameProfile` |
+| Wrapped | Kernel types with their own lifecycle or mutable state never appear on the public surface; mods reach them through `Nc*` facades and handles | everything else |
+| Internal | Injection probes and plumbing; not an API | `Internal/*`, `Gui/*` |
+
+The judgement rule behind the whitelist: value types and cross-mod data currencies are frozen by contract; service types that carry their own state are wrapped.
+
+One deliberate exception lives in the wrapper layer: `NcAccess` unwraps a handle back to the kernel object and resolves members by name, so a mod can reach whatever the facades do not cover. It is an escape hatch rather than a promise — the names it uses are kernel implementation details, and a rename there breaks a mod relying on them.
+
+Known debt, tracked for upcoming batches: `NcRecipes` (recipe types), `NcRegistries` (`Registry<T>` handles), and the `Block`/`Item` content classes are settled by the content-registration batch; storage APIs by the storage batch. Event handler exceptions are isolated (logged, never propagated into the kernel), and cancellable events exist as a mechanism (`INcCancellable`); the first cancellable events land with the interaction batch.
+
 ## Building
 
 This project is configured by `NetCraft.ModApi.ncproj`, not by a csproj, so `dotnet build` does not apply. Build it with `ncm`, the NetCraft mod development CLI:

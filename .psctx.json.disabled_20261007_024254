@@ -1,0 +1,6 @@
+{
+  "Name": "NetCraft.ModApi",
+  "EnableAmpersandFork": true,
+  "ShowProjectNameInPrompt": false,
+  "Env": {}
+}
